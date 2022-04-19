@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Form\PostType;
+use App\Repository\PostRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,26 +13,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class PostController extends AbstractController
 {
     #[Route('/', name: 'home')]
-    public function home(): Response
+    public function home(PostRepository $postRepository): Response
     {
+        $posts = $postRepository->findAll();
+        //dd($posts);
+        
         return $this->render('post/home.html.twig', [
-            'controller_name' => 'postController',
+            'posts' => $posts,
         ]);
     }
-
-
-    #[Route('/post/{id}', name: 'post_view')]
-    public function post($id): Response
-    {
-        return $this->render('post/view.html.twig', [
-            'post' => [
-                'title' => 'le titre de l\'article',
-                'content' => 'le text surper long de l\'article',
-            ],
-
-        ]);
-    }
-
 
     #[Route('/post/add', name: 'post_add')]
     public function addPost(Request $request): Response
@@ -38,8 +29,31 @@ class PostController extends AbstractController
         $post = new Post();
         $form = $this->createForm(PostType::class, $post);
 
+        //dd($this->getUser());
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $post->setUser($this->getUser());
+            $post->setActive(false);
+
+            //dd($post);
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($post);
+            $em->flush();
+            return $this->redirectToRoute('home');
+        }
+
         return $this->render('post/add.html.twig', [
             'form' => $form->createView(),
+        ]);
+    }
+
+
+    #[Route('/post/{slug}', name: 'post_view')]
+    public function post(Post $post): Response
+    {
+        return $this->render('post/view.html.twig', [
+            'post' => $post
         ]);
     }
 }
