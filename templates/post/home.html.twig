@@ -13,7 +13,20 @@
         <!-- Main Content-->
         <div class="container px-4 px-lg-5">
             <div class="row gx-4 gx-lg-5 justify-content-center">
-                <div class="col-md-10 col-lg-8 col-xl-7">
+                        <!-- Sidebar -->
+                <div class="col-lg-4 col-md-4 mx-auto">
+                    <h2>Les anciens articles</h2>
+                    {% for oldPost in oldPosts %}
+                        <div class="post-preview">
+                            <a href="{{ path('post_view', {slug: oldPost.slug}) }}">
+                                <h2 class="post-subtitle">{{ oldPost.title }}</h2>
+                            </a>
+                            <p class="post-meta">{{ oldPost.createdAt | ago }}</p>
+                        </div>
+                    {% endfor %}
+                </div>  
+                <div class="col-md-8 col-lg-8 col-xl-7">
+
                     <!-- Post preview-->
                     {% for post in posts %}
                         {# {{ dump(post) }}  #}
@@ -27,7 +40,7 @@
                             <p class="post-meta">
                                 Rédigé par {{ post.user.email }}
                                 publié {{ post.createdAt | ago }}
-                                classé dans {{ post.category.name }}
+                                classé dans <a href="{{ path('app_category', {slug: post.category.slug} ) }}">{{ post.category.name }}</a>
                             </p>
                         </div>
                         <!-- Divider-->
@@ -37,6 +50,8 @@
                     <!-- Pager-->
                     <div class="d-flex justify-content-end mb-4"><a class="btn btn-primary text-uppercase" href="#!">Older Posts →</a></div>
                 </div>
+
+                
             </div>
         </div>
 
