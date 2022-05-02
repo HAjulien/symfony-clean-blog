@@ -18,8 +18,10 @@ class CategoryType extends AbstractType
                 "label" => "Nom de la catégorie",
             ])
             /*->add('slug')*/
-            /*->add('parent')*/
-            ->add('Valider', SubmitType::class)
+            ->add('parent')
+            ->add('Valider', SubmitType::class, array(
+                'label' => $options['labelButton'],
+            ))
         ;
     }
 
@@ -27,6 +29,7 @@ class CategoryType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Category::class,
+            'labelButton' => 'confirmer',
         ]);
     }
 }

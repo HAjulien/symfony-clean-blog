@@ -31,7 +31,9 @@ class PostType extends AbstractType
             ->add('category', EntityType::class, [
                 'class' => Category::class
             ])
-            ->add('Valider', SubmitType::class)
+            ->add('Valider', SubmitType::class, array(
+                'label' => $options['labelButton'],
+            ))
 
         ;
     }
@@ -40,6 +42,7 @@ class PostType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Post::class,
+            'labelButton' => 'confirmer',
         ]);
     }
 }
