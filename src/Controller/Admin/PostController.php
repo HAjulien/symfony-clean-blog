@@ -17,7 +17,7 @@ class PostController extends AbstractController
     #[Route('/', name: 'index')]
     public function index(PostRepository $postRepository): Response
     {
-                $posts = $postRepository->findAll();
+        $posts = $postRepository->findAll();
 
         return $this->render('admin/post/index.html.twig', [
             'posts' => $posts,
@@ -28,9 +28,9 @@ class PostController extends AbstractController
     public function addPost(Request $request, ManagerRegistry $doctrine): Response
     {
         // dd($request);
-        $posts = new Post();
+        $post = new Post();
         // dd($posts);
-        $form = $this->createForm(PostType::class, $posts,  array('labelButton' => 'ajouter'));
+        $form = $this->createForm(PostType::class, $post,  array('labelButton' => 'ajouter'));
         // dd($form);
         // dd($form->createView());
 
@@ -38,8 +38,10 @@ class PostController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             // $em = $this->getDoctrine()->getManager(); ancienne depreciée
+            $post->setActive(true);
+            $post->setUser($this->getUser());
             $em = $doctrine->getManager();
-            $em->persist($posts);
+            $em->persist($post);
             $em->flush();
             return $this->redirectToRoute('admin_post_index');
         }
@@ -52,12 +54,12 @@ class PostController extends AbstractController
     }
 
     #[Route("/update/{id}", name:"update")]
-    public function updateposts(Post $posts, Request $request, ManagerRegistry $doctrine): Response
+    public function updatePost(Post $post, Request $request, ManagerRegistry $doctrine): Response
     {
         // dd($request);
         //$posts = new Post(); Pas besoin car recuperer par param converter
         // dd($posts);
-        $form = $this->createForm(PostType::class, $posts,  array('labelButton' => 'modifier'));
+        $form = $this->createForm(PostType::class, $post,  array('labelButton' => 'modifier'));
         // dd($form);
         // dd($form->createView());
 
@@ -66,8 +68,9 @@ class PostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // $em = $this->getDoctrine()->getManager(); ancienne depreciée
             $em = $doctrine->getManager();
-            $em->persist($posts);
+            $em->persist($post);
             $em->flush();
+            $this->addFlash('success', 'article modifié !');
             return $this->redirectToRoute('admin_post_index');
         }
         
@@ -80,13 +83,22 @@ class PostController extends AbstractController
     }
 
     #[Route("/delete/{id}", name: "delete")]
-    public function delete(Post $posts, ManagerRegistry $doctrine): Response
+    public function delete(Post $post, ManagerRegistry $doctrine): Response
     {
         $em = $doctrine->getManager();
-        $em->remove($posts);
+        $em->remove($post);
         $em->flush();
         $this->addFlash('success', 'Article supprimé !');
         return $this->redirectToRoute('admin_post_index');
     }
 
+    #[Route("/activate/{id}", name: "activate")]
+    public function active(Post $post, ManagerRegistry $doctrine): Response
+    {
+        $post->setActive(($post->getActive()) ? false : true);
+        $em = $doctrine->getManager();
+        $em->flush();
+        return New Response("true");
+
+    }
 }

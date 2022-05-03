@@ -1,6 +1,6 @@
     {% extends 'sb_admin.html.twig' %}
 
-    {% block title %}Liste des catégories{% endblock %}
+    {% block title %}Liste des articles{% endblock %}
     
     {% block body %}
                 <main>
@@ -20,9 +20,9 @@
                                         <tr>
                                             <th>N°</th>
                                             <th>titre</th>
+                                            <th>date</th>
                                             <th>categorie</th>
-                                            <th>image</th>
-                                            <th>contenu</th>
+                                            <th>active</th>
                                             <th></th>
                                             <th></th>
                                         </tr>
@@ -31,9 +31,9 @@
                                         <tr>
                                             <th>N°</th>
                                             <th>titre</th>
+                                            <th>date</th>
                                             <th>categorie</th>
-                                            <th>image</th>
-                                            <th>contenu</th>
+                                            <th>active</th>
                                             <th></th>
                                             <th></th>
                                         </tr>
@@ -44,9 +44,13 @@
                                         <tr>
                                             <td> {{ post.id }} </td>
                                             <td>  {{ post.title }} </td>
+                                            <td>  {{ post.createdAt | date }} </td>
                                             <td> {{ post.category.name }} </td>
-                                            <td> {{ post.image }} </td>
-                                            <td> {{ post.content | u.truncate(350, '...') | raw }} </td>
+                                            <td> 
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox" name="active" id="customSwitch{{ post.id }}" data-id="{{ post.id }}" {{ post.active ? 'checked' : null}}>
+                                                </div>
+                                            </td>
                                             <td> 
                                                 <a href="{{ path('admin_post_update', {id: post.id}) }}" class="btn btn-primary btn-sm">Modifier</a>
 
@@ -85,12 +89,24 @@
                 </div>
 
                 <script>
+
+
                 window.onload = () => {
+
+                    let activate = document.querySelectorAll("[type=checkbox]")
+                    for(let button of activate) {
+                        button.addEventListener("click", function(){
+                            let xmlhttp = new XMLHttpRequest
+                            xmlhttp.open("get", `/admin/post/activate/${this.dataset.id}`)
+                            xmlhttp.send() 
+                        })
+                    }
+                    
                     let btdeletes = document.querySelectorAll(".modal-trigger")
                     for(let btdelete of btdeletes) {
                         btdelete.addEventListener("click", function(){
                             document.querySelector(".modal-footer a").href=`/admin/post/delete/${this.dataset.id}`
-                            document.querySelector(".modal-body").innerText = `Etes-vous sûr de vouloir supprimer la catégorie "${this.dataset.title}"`
+                            document.querySelector(".modal-body").innerText = `Etes-vous sûr de vouloir supprimer l'article "${this.dataset.title}"`
                         })
                     }
                 }
