@@ -39,7 +39,9 @@ class CategoryController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             // $em = $this->getDoctrine()->getManager(); ancienne depreciée
             $em = $doctrine->getManager();
+            //quand l'instance est vide on persist
             $em->persist($category);
+            //on insert avec flush
             $em->flush();
             return $this->redirectToRoute('admin_category_index');
         }
@@ -63,9 +65,11 @@ class CategoryController extends AbstractController
 
         
         $form->handleRequest($request);
+        //si on est en post et que le nouvelles donnees sont valide
         if ($form->isSubmitted() && $form->isValid()) {
             // $em = $this->getDoctrine()->getManager(); ancienne depreciée
             $em = $doctrine->getManager();
+            // le persist est inutile car Category est deja crée
             $em->persist($category);
             $em->flush();
             return $this->redirectToRoute('admin_category_index');
@@ -81,8 +85,10 @@ class CategoryController extends AbstractController
         
     #[Route("/delete/{id}", name: "delete")]
     public function delete(Category $category, ManagerRegistry $doctrine): Response
+    //pas besoin de request
     {
         $em = $doctrine->getManager();
+        //persist est contraire de remove
         $em->remove($category);
         $em->flush();
         $this->addFlash('success', 'Catégorie supprimé !');
