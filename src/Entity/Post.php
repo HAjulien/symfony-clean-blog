@@ -5,9 +5,14 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use App\Repository\PostRepository;
 use Gedmo\Mapping\Annotation as Gedmo;
+use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
-#[ApiResource]
+#[ApiResource]  
+#[ApiFilter( SearchFilter::class, properties: ['id' => 'exact', 'title' => 'partial', 'content' => 'partial' ])]
+// #[ApiFilter( RangeFilter::class, properties:['number'])]
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
 {
