@@ -7,3 +7,5 @@ api_platform:
         versions: [3]
     enable_swagger_ui: false
     enable_re_doc: false
+    # defaults:
+    #     pagination_items_per_page: 8

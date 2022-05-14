@@ -7,12 +7,14 @@ use App\Repository\PostRepository;
 use Gedmo\Mapping\Annotation as Gedmo;
 use ApiPlatform\Core\Annotation\ApiFilter;
 use ApiPlatform\Core\Annotation\ApiResource;
+use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\RangeFilter;
 use ApiPlatform\Core\Bridge\Doctrine\Orm\Filter\SearchFilter;
 
-#[ApiResource]  
+#[ApiResource(attributes: ["pagination_items_per_page" => 3])]  
 #[ApiFilter( SearchFilter::class, properties: ['id' => 'exact', 'title' => 'partial', 'content' => 'partial' ])]
-// #[ApiFilter( RangeFilter::class, properties:['number'])]
+#[ApiFilter( RangeFilter::class, properties:['id'])]
+#[ApiFilter( OrderFilter::class, properties:['id'], arguments:['orderParameterName' => 'order'])]
 #[ORM\Entity(repositoryClass: PostRepository::class)]
 class Post
 {
